@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:40:09 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 18:29:20 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 Server::Server() : SerSocketFd(-1) {}
 	
-Server::Server(const Server& other) : Port(other.Port), SerSocketFd(other.SerSocket), clients(other.clients), fds(other.fds) {}
+Server::Server(const Server& other) : Port(other.Port), SerSocketFd(other.SerSocketFd), clients(other.clients), fds(other.fds) {}
 
-Server& operator=(const Server& other) {
+Server& Server::operator=(const Server& other) {
 	
 	if (this != &other) {
 		
@@ -87,7 +87,7 @@ void Server::AcceptNewClient()
 	NewPoll.revents = 0;
 
 	cli.SetFd(incofd);
-	cli.setIpAdd(inet_ntoa((cliadd.sin_addr)));
+	cli.SetIPaddr(inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
 	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;

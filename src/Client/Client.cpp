@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:42:15 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 17:47:09 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 18:28:34 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,10 @@ const std::string&	Client::GetUsername() const {
 	return (this->_username);
 }
 
+const std::string& Client::GetBuffer() const {
+	return (this->_recvBuffer);
+}
+
 bool			Client::IsAuth() const {
 	return (this->_authenticated);	
 }
@@ -100,4 +104,30 @@ void	Client::SetAuth(bool value) {
 
 void	Client::SetRegister(bool value) {
 	this->_registered = value;
+}
+
+//others
+void Client::AppendBuffer(const std::string& data)
+{
+    this->_recvBuffer += data;
+}
+
+bool Client::HasCompleteMessage() const
+{
+    return (_recvBuffer.find("\r\n") != std::string::npos);
+}
+
+std::string Client::ExtractMessage()
+{
+    size_t pos = _recvBuffer.find("\r\n");
+
+    if (pos == std::string::npos)
+        return "";
+    std::string message = _recvBuffer.substr(0, pos);
+    _recvBuffer.erase(0, pos + 2);
+    return message;
+}
+
+void Client::ClearBuffer() {
+	_recvBuffer.clear();
 }

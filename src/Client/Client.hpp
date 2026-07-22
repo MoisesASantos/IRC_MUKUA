@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:40:39 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 17:55:04 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 18:26:52 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Client
 		const std::string&		GetHostname() const;
 		const std::string&		GetUsername() const;
 		const std::string&		GetIPaddr() const;
+		const std::string& 		GetBuffer() const; 
 		bool					IsAuth() const;
 		bool					IsRegister() const;
 
@@ -49,4 +50,10 @@ class Client
 		void	SetUsername(const std::string& username);
 		void	SetAuth(bool value);
 		void	SetRegister(bool value);
+
+		//Others
+		void	ClearBuffer();
+		void AppendBuffer(const std::string& data);
+		bool Client::HasCompleteMessage() const;
+		std::string Client::ExtractMessage();
 };

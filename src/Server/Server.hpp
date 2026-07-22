@@ -6,13 +6,14 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:11 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:50:42 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 18:22:18 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "../Headers/includes.h"
+#include "../Headers/includes.hpp"
+#include "../Client/Client.hpp"
 
 class Server
 {
@@ -38,4 +39,4 @@ class Server
 	
 		void CloseFds();
 		void ClearClients(int fd);
-}
+};
