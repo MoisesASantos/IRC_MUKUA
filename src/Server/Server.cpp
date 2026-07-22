@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:14:35 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 15:40:09 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void Server::ServerInit()
 
 void Server::SerSocket()
 {
-	struct sockaddr_in add;
-	struct pollfd NewPoll;
+	sockaddr_in add;
+	pollfd NewPoll;
 	
 	add.sin_family = AF_INET;
 	add.sin_port = htons(this->Port);
@@ -57,7 +57,7 @@ void Server::SerSocket()
 		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
 	if (fcntl(SerSocketFd, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
-	if (bind(SerSocketFd, (struct sockaddr *)&add, sizeof(add)) == -1)
+	if (bind(SerSocketFd, (sockaddr *)&add, sizeof(add)) == -1)
 		throw(std::runtime_error("faild to bind socket"));
 	if (listen(SerSocketFd, SOMAXCONN) == -1)
 		throw(std::runtime_error("listen() faild"));
@@ -68,13 +68,47 @@ void Server::SerSocket()
 	fds.push_back(NewPoll);
 }
 
+void Server::AcceptNewClient()
+{
+	Client cli;
+	sockaddr_in cliadd;
+	pollfd NewPoll;
+	socklen_t len = sizeof(cliadd);
 
-void Server::AcceptNewClient() {
-	
+	int incofd = accept(SerSocketFd, (sockaddr *)&(cliadd), &len);
+	if (incofd == -1)
+		{std::cout << "accept() failed" << std::endl; return;}
+
+	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
+		{std::cout << "fcntl() failed" << std::endl; return;}
+
+	NewPoll.fd = incofd;
+	NewPoll.events = POLLIN;
+	NewPoll.revents = 0;
+
+	cli.SetFd(incofd);
+	cli.setIpAdd(inet_ntoa((cliadd.sin_addr)));
+	clients.push_back(cli);
+	fds.push_back(NewPoll);
+	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;
 }
 
-void Server::ReceiveNewData(int fd) {
-	
+void Server::ReceiveNewData(int fd)
+{
+	char buff[1024];
+	memset(buff, 0, sizeof(buff));
+
+	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1 , 0);
+	if(bytes <= 0){
+		
+		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
+		ClearClients(fd);
+		close(fd);
+	} else{
+		
+		buff[bytes] = '\0';
+		std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;	
+	}
 }
 
 bool Server::Signal = false;

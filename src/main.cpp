@@ -1,34 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/07/22 13:40:39 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:50:12 by mosantos         ###   ########.fr       */
+/*   Created: 2026/07/22 15:45:52 by mosantos          #+#    #+#             */
+/*   Updated: 2026/07/22 15:52:19 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "header.hpp"
 
-#include "../Headers/includes.h"
-
-class Client
+int main(int argc, char **argv)
 {
-	private:
-		int	Fd;
-		std::string	IPaddr;
 	
-		public:
-		Client();
-		Client(const Client& other);
-		Client& operator=(const Client& other);
-		~Client();
-
-		
-		int GetFd() const;
-		void GetIPaddr() const;
-		void SetFd(int fd);
-		void SetIPaddr(std::string ipaddr);
-};
+}
