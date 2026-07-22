@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:40:39 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:50:12 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 17:48:04 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,14 @@
 class Client
 {
 	private:
-		int	Fd;
-		std::string	IPaddr;
+		int	_fd;
+		std::string _nickname;
+    	std::string _username;
+    	std::string _hostname;
+		std::string _recvBuffer;
+		std::string	_ipAddr;
+    	bool        _authenticated;
+    	bool        _registered;
 	
 		public:
 		Client();
@@ -26,9 +32,21 @@ class Client
 		Client& operator=(const Client& other);
 		~Client();
 
-		
-		int GetFd() const;
-		void GetIPaddr() const;
-		void SetFd(int fd);
-		void SetIPaddr(std::string ipaddr);
+		//Getters
+		int						GetFd() const;
+		const std::string&		GetNickname() const;
+		const std::string&		GetHostname() const;
+		const std::string&		GetUsername() const;
+		const std::string&		GetIPaddr() const;
+		bool					IsAuth() const;
+		bool					IsRegister() const;
+
+		//Setters
+		void 	SetFd(int fd);
+		void 	SetIPaddr(const std::string& ipaddr);
+		void	SetNickname(const std::string& nickname);
+		void	SetHostname(const std::string& hostname);
+		void	SetUsername(const std::string& username);
+		void	SetAuth(bool value);
+		void	SetRegister(bool value);
 };
