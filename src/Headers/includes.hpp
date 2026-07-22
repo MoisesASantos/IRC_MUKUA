@@ -6,24 +6,45 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:38:24 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 15:08:13 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 15:50:49 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <iostream>
-#include <vector> //-> for vector
-#include <sys/socket.h> //-> for socket()
-#include <sys/types.h> //-> for socket()
-#include <netinet/in.h> //-> for sockaddr_in
-#include <fcntl.h> //-> for fcntl()
-#include <unistd.h> //-> for close()
-#include <arpa/inet.h> //-> for inet_ntoa()
-#include <poll.h> //-> for poll()
-#include <csignal> //-> for signal()
+#include <string>
+#include <vector>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <poll.h>
+#include <csignal>
 
-#define RED "\e[1;31m" //-> for red color
-#define WHI "\e[0;37m" //-> for white color
-#define GRE "\e[1;32m" //-> for green color
-#define YEL "\e[1;33m" //-> for yellow colo
+#define RED "\e[1;31m"
+#define WHI "\e[0;37m"
+#define GRE "\e[1;32m"
+#define YEL "\e[1;33m"
+
+typedef struct sockaddr_in {
+ 
+	sa_family_t     sin_family;
+ 	in_port_t       sin_port;
+ 	struct  in_addr sin_addr;
+ 	char            sin_zero[8];
+};
+
+typedef struct in_addr {
+	
+	in_addr_t s_addr;
+};
+
+typedef struct pollfd {
+	
+	int     fd;
+	short   events;
+	short   revents;
+};

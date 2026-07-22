@@ -6,11 +6,13 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:11 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 14:20:52 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/22 15:50:42 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include "../Headers/includes.h"
 
 class Server
 {
@@ -19,7 +21,7 @@ class Server
 		int SerSocketFd;
 		static bool Signal;
 		std::vector<Client> clients;
-		std::vector<struct pollfd> fds;
+		std::vector<pollfd> fds;
 	
 	public:
 		Server();
