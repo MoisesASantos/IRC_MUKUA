@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/24 12:52:18 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/24 15:04:35 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,17 @@ void Server::SerSocket()
 	if(_serSocketFd == -1)
 		throw(std::runtime_error("faild to create socket"));
 
-	int en = 1;
-	if(setsockopt(_serSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+	int enable = 1;
+	//in this line we change the socket config, to enable reuse the address, without have a error after finish the server
+	if(setsockopt(_serSocketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1)
 		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+	//in this line we use fcntl to change the file descriptor config, to be non-blocking this way the process non-block request for other clients
 	if (fcntl(_serSocketFd, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
+	//in this line we bind, to config the identify of our socker, who port and address
 	if (bind(_serSocketFd, (sockaddr *)&add, sizeof(add)) == -1)
 		throw(std::runtime_error("faild to bind socket"));
+	//in this we start the listen, for socket
 	if (listen(_serSocketFd, SOMAXCONN) == -1)
 		throw(std::runtime_error("listen() faild"));
 
