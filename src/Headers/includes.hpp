@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:38:24 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/23 12:00:07 by sgaspar          ###   ########.fr       */
+/*   Updated: 2026/07/24 12:30:36 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <poll.h>
 #include <csignal>
 #include <cstring>
+#include <sstream>
 
 #define RED "\e[1;31m"
 #define WHI "\e[0;37m"

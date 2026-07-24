@@ -6,24 +6,33 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 18:29:20 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/24 12:37:55 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() : SerSocketFd(-1) {}
+Server::Server() : _serSocketFd(-1) {}
 	
-Server::Server(const Server& other) : Port(other.Port), SerSocketFd(other.SerSocketFd), clients(other.clients), fds(other.fds) {}
+Server::Server(const Server& other) 
+	: 
+	_port(other._port), 
+	_serSocketFd(other._serSocketFd),
+	_password(other._password),
+	_fds(other._fds),
+	_clients(other._clients)
+{	
+}
 
 Server& Server::operator=(const Server& other) {
 	
 	if (this != &other) {
 		
-		this->Port = other.Port;
-		this->SerSocketFd = other.SerSocketFd;
-		this->clients = other.clients;
-		this->fds = other.fds;
+		this->_port = other._port;
+		this->_serSocketFd = other._serSocketFd;
+		this->_clients = other._clients;
+		this->_fds = other._fds;
+		this->_password = other._password;
 	}
 	return *this;
 }
@@ -31,11 +40,24 @@ Server& Server::operator=(const Server& other) {
 Server::~Server() {}
 
 
-void Server::ServerInit()
+void Server::ServerInit(std::string port)
 {
-	this->Port = 4444;
+	int Port;
+	std::stringstream ss(port);
+
+	if (ss >> Port) {
+		this->_port = Port;
+	} else {
+		std::cout << "You should use a valid port" << std::endl;
+		return ;
+	}
+	if (_port > 0 && _port <= 65535)
+	{
+		std::cout << "You should use a valid port" << std::endl;
+		return ;
+	}
 	SerSocket();
-	std::cout << GRE << "Server <" << SerSocketFd << "> Connected" << WHI << std::endl;
+	std::cout << GRE << "Server <" << _serSocketFd << "> Connected" << WHI << std::endl;
 	std::cout << "Waiting to accept a connection...\n";
 }
 
