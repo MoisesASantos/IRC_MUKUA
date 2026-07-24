@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:40:39 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/22 18:26:52 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/24 11:39:03 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,6 @@ public:
 	//Others
 	void	ClearBuffer();
 	void AppendBuffer(const std::string& data);
-	// bool Client::HasCompleteMessage() const;
 	bool HasCompleteMessage() const;
-	// std::string Client::ExtractMessage();
 	std::string ExtractMessage();
 };
