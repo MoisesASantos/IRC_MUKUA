@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/24 12:37:55 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/24 12:52:18 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,27 +67,27 @@ void Server::SerSocket()
 	pollfd NewPoll;
 	
 	add.sin_family = AF_INET;
-	add.sin_port = htons(this->Port);
+	add.sin_port = htons(this->_port);
 	add.sin_addr.s_addr = INADDR_ANY;
 
-	SerSocketFd = socket(AF_INET, SOCK_STREAM, 0);
-	if(SerSocketFd == -1)
+	_serSocketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if(_serSocketFd == -1)
 		throw(std::runtime_error("faild to create socket"));
 
 	int en = 1;
-	if(setsockopt(SerSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+	if(setsockopt(_serSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
-	if (fcntl(SerSocketFd, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(_serSocketFd, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
-	if (bind(SerSocketFd, (sockaddr *)&add, sizeof(add)) == -1)
+	if (bind(_serSocketFd, (sockaddr *)&add, sizeof(add)) == -1)
 		throw(std::runtime_error("faild to bind socket"));
-	if (listen(SerSocketFd, SOMAXCONN) == -1)
+	if (listen(_serSocketFd, SOMAXCONN) == -1)
 		throw(std::runtime_error("listen() faild"));
 
-	NewPoll.fd = SerSocketFd;
+	NewPoll.fd = _serSocketFd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-	fds.push_back(NewPoll);
+	_fds.push_back(NewPoll);
 }
 
 void Server::AcceptNewClient()
@@ -97,7 +97,7 @@ void Server::AcceptNewClient()
 	pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
 
-	int incofd = accept(SerSocketFd, (sockaddr *)&(cliadd), &len);
+	int incofd = accept(_serSocketFd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		{std::cout << "accept() failed" << std::endl; return;}
 
@@ -110,8 +110,8 @@ void Server::AcceptNewClient()
 
 	cli.SetFd(incofd);
 	cli.SetIPaddr(inet_ntoa((cliadd.sin_addr)));
-	clients.push_back(cli);
-	fds.push_back(NewPoll);
+	_clients.push_back(cli);
+	_fds.push_back(NewPoll);
 	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;
 }
 
@@ -133,39 +133,39 @@ void Server::ReceiveNewData(int fd)
 	}
 }
 
-bool Server::Signal = false;
+bool Server::_signal = false;
 void Server::SignalHandler(int signum)
 {
 	(void)signum;
 	std::cout << std::endl << "Signal Received!" << std::endl;
-	Server::Signal = true;
+	Server::_signal = true;
 }
 
 void Server::CloseFds(){
 	
-	for(size_t i = 0; i < clients.size(); i++) {
-		std::cout << RED << "Client <" << clients[i].GetFd() << "> Disconnected" << WHI << std::endl;
-		close(clients[i].GetFd());
+	for(size_t i = 0; i < _clients.size(); i++) {
+		std::cout << RED << "Client <" << _clients[i].GetFd() << "> Disconnected" << WHI << std::endl;
+		close(_clients[i].GetFd());
 	}
-	if (SerSocketFd != -1) {
-		std::cout << RED << "Server <" << SerSocketFd << "> Disconnected" << WHI << std::endl;
-		close(SerSocketFd);
+	if (_serSocketFd != -1) {
+		std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
+		close(_serSocketFd);
 	}
 }
 
 void Server::ClearClients(int fd) {
 	
-	for(size_t i = 0; i < fds.size(); i++) {
+	for(size_t i = 0; i < _fds.size(); i++) {
 		
-		if (fds[i].fd == fd) {	
-			fds.erase(fds.begin() + i); 
+		if (_fds[i].fd == fd) {	
+			_fds.erase(_fds.begin() + i); 
 			break;
 		}
 	}
-	for(size_t i = 0; i < clients.size(); i++) {
+	for(size_t i = 0; i < _clients.size(); i++) {
 		
-		if (clients[i].GetFd() == fd) {
-			clients.erase(clients.begin() + i);
+		if (_clients[i].GetFd() == fd) {
+			_clients.erase(_clients.begin() + i);
 			break;
 		}
 	}
