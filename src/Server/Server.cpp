@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/24 15:04:35 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/24 15:33:22 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void Server::SerSocket()
 	if (listen(_serSocketFd, SOMAXCONN) == -1)
 		throw(std::runtime_error("listen() faild"));
 
+	//we create a poll to monitore the events on file descriptor, in our case, the socket
 	NewPoll.fd = _serSocketFd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
