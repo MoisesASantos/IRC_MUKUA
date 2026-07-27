@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:52:24 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 15:06:42 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void    ft_execute_server(Server& server, std::string port)
     Client*     client;
     std::string command;
     int ret;
+    pollfd& pfd;
 
     server.ServerInit(port);
     while (server.IsRunning())
@@ -28,15 +29,12 @@ void    ft_execute_server(Server& server, std::string port)
             continue;
         for (size_t i = 0; i < server.GetFdCount(); i++)
         {
-            pollfd& pfd = server.GetPollFd(i);
+            pfd = server.GetPollFd(i);
             
             if (pfd.revents & POLLIN)
                 continue;
-
             if (pfd.fd == server.GetServerSocketFd())
-            {
                 server.AcceptNewClient();
-            }
             else
             {
                 client = server.GetClient(pfd.fd);
