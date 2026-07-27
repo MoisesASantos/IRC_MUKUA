@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:11 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:41:52 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 15:13:43 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ class Server
 		void ServerInit(std::string port);
 		void SerSocket();
 		void AcceptNewClient();
-		void Server::ReceiveNewData(Client& client);
+		void ReceiveNewData(Client& client);
 
 		//Signal Method
 		static void SignalHandler(int signum);

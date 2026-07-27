@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:59:15 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 15:16:46 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Server::ServerInit(std::string port)
 		std::cout << "You should use a valid port" << std::endl;
 		return ;
 	}
-	if (_port > 0 && _port <= 65535)
+	if (!(_port > 0 && _port <= 65535))
 	{
 		std::cout << "You should use a valid port" << std::endl;
 		return ;
