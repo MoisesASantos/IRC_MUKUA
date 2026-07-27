@@ -6,23 +6,47 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 12:35:05 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 15:08:44 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Headers/header.hpp"
 
-/*for (size_t i = 0; i < _fds.size(); i++)
-{
-    if (!(_fds[i].revents & POLLIN))
-        continue;
 
-    if (_fds[i].fd == _serverSocketFd)
+void    ft_execute_server(Server& server, std::string port)
+{
+    Client*     client;
+    std::string command;
+    int ret;
+
+    server.ServerInit(port);
+    while (server.IsRunning())
     {
-        // Nova conexão
+        ret = poll(&server.GetPollFd(0), server.GetFdCount(), 0);
+        if (ret <= 0)
+            continue;
+        
+        for (size_t i = 0; i < server.GetFdCount(); i++)
+        {
+            pollfd& pfd = server.GetPollFd(i);
+            
+            if (!(pfd.revents & POLLIN))
+                continue;
+            if (pfd.fd == server.GetServerSocketFd())
+                server.AcceptNewClient();
+            else
+            {
+                client = server.GetClient(pfd.fd);
+                if (client)
+                {
+                    server.ReceiveNewData(*(client));
+                    if (client->HasCompleteMessage())
+                    {
+                        command = client->ExtractMessage();
+                    }
+                }
+            }
+        }
     }
-    else
-    {
-        // Cliente enviou dados
-    }
-}*/
+    server.CloseFds();
+}

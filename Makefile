@@ -6,7 +6,7 @@
 #    By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/09 11:55:31 by mosantos          #+#    #+#              #
-#    Updated: 2026/07/22 15:45:26 by mosantos         ###   ########.fr        #
+#    Updated: 2026/07/27 15:14:32 by mosantos         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,12 +16,13 @@ CXX = c++
 SRC_DIR = src
 
 NAME = ircserv
-SRCS = $(SRC_DIR)/main.c \
-	   $(SRC_DIR)/Client/Client.cpp \
-	   $(SRC_DIR)/Client/Server.cpp
+SRCS = $(SRC_DIR)/Client/Client.cpp \
+	   $(SRC_DIR)/Server/Server.cpp \
+	   $(SRC_DIR)/ft_engine.cpp \
+	   $(SRC_DIR)/main.cpp
 
-
-HEADERS = includes.hpp \
+HEADERS = $(SRC_DIR)/Headers/header.hpp \
+		  $(SRC_DIR)/Headers/includes.hpp \
 		  $(SRC_DIR)/Client/Client.hpp \
 		  $(SRC_DIR)/Server/Server.hpp
 		  

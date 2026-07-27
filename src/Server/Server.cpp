@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 12:46:59 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 15:16:46 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,20 @@ void Server::ServerInit(std::string port)
 		std::cout << "You should use a valid port" << std::endl;
 		return ;
 	}
-	if (_port > 0 && _port <= 65535)
+	if (!(_port > 0 && _port <= 65535))
 	{
 		std::cout << "You should use a valid port" << std::endl;
 		return ;
 	}
-	SerSocket();
+	try
+	{
+		SerSocket();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		return ;
+	}
 	std::cout << GRE << "Server <" << _serSocketFd << "> Connected" << WHI << std::endl;
 	std::cout << "Waiting to accept a connection...\n";
 }
@@ -123,27 +131,27 @@ void Server::AcceptNewClient()
 
 	client.SetIPaddr(ip);
 	client.SetFd(connecfd);
-	_clients.push_back(client);
+	_clients[connecfd] = client;
 	_fds.push_back(NewPoll);
 	std::cout << GRE << "Client <" << connecfd << "> Connected" << WHI << std::endl;
 }
 
-void Server::ReceiveNewData(int fd)
+void Server::ReceiveNewData(Client& client)
 {
 	char buff[1024];
 	memset(buff, 0, sizeof(buff));
 
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1 , 0);
-	if(bytes <= 0){
-		
-		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
-		ClearClients(fd);
-		close(fd);
-	} else{
-		
-		buff[bytes] = '\0';
-		std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;	
+	ssize_t bytes = recv(client.GetFd(), buff, sizeof(buff) - 1, 0);
+	if (bytes <= 0)
+	{
+		std::cout << RED << "Client <" << client.GetFd() << "> Disconnected" << WHI << std::endl;
+    	ClearClients(client.GetFd());
+		return;
 	}
+	
+    buff[bytes] = '\0';
+	std::cout << YEL << "Client <" << client.GetFd() << "> Data: " << WHI << buff;
+    client.AppendBuffer(std::string(buff, bytes));
 }
 
 bool Server::_signal = false;
@@ -154,32 +162,77 @@ void Server::SignalHandler(int signum)
 	Server::_signal = true;
 }
 
-void Server::CloseFds(){
-	
-	for(size_t i = 0; i < _clients.size(); i++) {
-		std::cout << RED << "Client <" << _clients[i].GetFd() << "> Disconnected" << WHI << std::endl;
-		close(_clients[i].GetFd());
-	}
-	if (_serSocketFd != -1) {
-		std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
-		close(_serSocketFd);
-	}
+bool Server::IsRunning()
+{
+	return !_signal;
 }
 
-void Server::ClearClients(int fd) {
-	
-	for(size_t i = 0; i < _fds.size(); i++) {
-		
-		if (_fds[i].fd == fd) {	
-			_fds.erase(_fds.begin() + i); 
-			break;
-		}
-	}
-	for(size_t i = 0; i < _clients.size(); i++) {
-		
-		if (_clients[i].GetFd() == fd) {
-			_clients.erase(_clients.begin() + i);
-			break;
-		}
-	}
+void Server::CloseFds()
+{
+    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+        std::cout << RED << "Client <" << it->first << "> Disconnected" << WHI << std::endl;
+        close(it->first);
+    }
+    _clients.clear();
+    
+	if (_serSocketFd != -1)
+    {
+        std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
+        close(_serSocketFd);
+        _serSocketFd = -1;
+    }
+    _fds.clear();
+}
+
+void Server::ClearClients(int fd)
+{
+    for (size_t i = 0; i < _fds.size(); i++)
+    {
+        if (_fds[i].fd == fd)
+        {
+            _fds.erase(_fds.begin() + i);
+            break;
+        }
+    }
+    close(fd);
+   _clients.erase(fd);
+}
+
+
+//Getters
+
+int Server::GetServerSocketFd() const
+{
+    return _serSocketFd;
+}
+
+const std::string& Server::GetPassword() const
+{
+    return _password;
+}
+
+Client* Server::GetClient(int fd)
+{
+    std::map<int, Client>::iterator it = _clients.find(fd);
+
+    if (it == _clients.end())
+        return NULL;
+
+    return &(it->second);
+}
+
+size_t Server::GetFdCount() const
+{
+    return _fds.size();
+}
+
+pollfd& Server::GetPollFd(size_t index)
+{
+    return _fds[index];
+}
+
+//Setters
+void	Server::setPassword(std::string pass) {
+	this->_password = pass;
 }
