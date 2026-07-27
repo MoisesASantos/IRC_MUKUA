@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 13:41:39 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 14:05:49 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,4 +210,9 @@ Client* Server::GetClient(int fd)
         return NULL;
 
     return &(it->second);
+}
+
+//Setters
+void	Server::setPassword(std::string pass) {
+	this->_password = pass;
 }
