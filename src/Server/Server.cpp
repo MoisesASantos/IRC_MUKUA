@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 12:46:59 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 13:41:39 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,27 +123,27 @@ void Server::AcceptNewClient()
 
 	client.SetIPaddr(ip);
 	client.SetFd(connecfd);
-	_clients.push_back(client);
+	_clients[connecfd] = client;
 	_fds.push_back(NewPoll);
 	std::cout << GRE << "Client <" << connecfd << "> Connected" << WHI << std::endl;
 }
 
-void Server::ReceiveNewData(int fd)
+void Server::ReceiveNewData(Client& client)
 {
 	char buff[1024];
 	memset(buff, 0, sizeof(buff));
 
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1 , 0);
-	if(bytes <= 0){
-		
-		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
-		ClearClients(fd);
-		close(fd);
-	} else{
-		
-		buff[bytes] = '\0';
-		std::cout << YEL << "Client <" << fd << "> Data: " << WHI << buff;	
+	ssize_t bytes = recv(client.GetFd(), buff, sizeof(buff) - 1, 0);
+	if (bytes <= 0)
+	{
+		std::cout << RED << "Client <" << client.GetFd() << "> Disconnected" << WHI << std::endl;
+    	ClearClients(client.GetFd());
+    	close(client.GetFd());
 	}
+	
+    buff[bytes] = '\0';
+	std::cout << YEL << "Client <" << client.GetFd() << "> Data: " << WHI << buff;
+    client.AppendBuffer(std::string(buff, bytes));
 }
 
 bool Server::_signal = false;
@@ -152,6 +152,11 @@ void Server::SignalHandler(int signum)
 	(void)signum;
 	std::cout << std::endl << "Signal Received!" << std::endl;
 	Server::_signal = true;
+}
+
+bool Server::IsRunning()
+{
+	return !_signal;
 }
 
 void Server::CloseFds(){
@@ -178,8 +183,31 @@ void Server::ClearClients(int fd) {
 	for(size_t i = 0; i < _clients.size(); i++) {
 		
 		if (_clients[i].GetFd() == fd) {
-			_clients.erase(_clients.begin() + i);
+			_clients.erase(fd);
 			break;
 		}
 	}
+}
+
+
+//Getters
+
+int Server::GetServerSocketFd() const
+{
+    return _serSocketFd;
+}
+
+const std::string& Server::GetPassword() const
+{
+    return _password;
+}
+
+Client* Server::GetClient(int fd)
+{
+    std::map<int, Client>::iterator it = _clients.find(fd);
+
+    if (it == _clients.end())
+        return NULL;
+
+    return &(it->second);
 }

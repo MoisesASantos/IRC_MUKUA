@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:11 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/24 12:31:21 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 13:41:24 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Server
 		static bool _signal;
 		std::string	_password;
 		std::vector<pollfd> _fds;
-		std::vector<Client> _clients;
+		std::map<int, Client> _clients;
 	
 	public:
 		Server();
@@ -31,13 +31,22 @@ class Server
 		Server& operator=(const Server& other);
 		~Server();
 	
+		//Getters
+		int GetServerSocketFd() const;
+		const std::string& GetPassword() const;
+		
+		//Server logic method
 		void ServerInit(std::string port);
 		void SerSocket();
 		void AcceptNewClient();
-		void ReceiveNewData(int fd);
-	
+		void Server::ReceiveNewData(Client& client);
+
+		//Signal Method
 		static void SignalHandler(int signum);
-	
+		static bool IsRunning();
+
+		//CleanUp Method
 		void CloseFds();
 		void ClearClients(int fd);
+		Client* GetClient(int fd);
 };

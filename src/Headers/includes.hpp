@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 13:38:24 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 12:45:55 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 13:03:51 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
