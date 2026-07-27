@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/24 15:33:22 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 12:46:59 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,27 +97,35 @@ void Server::SerSocket()
 
 void Server::AcceptNewClient()
 {
-	Client cli;
+	Client client;
 	sockaddr_in cliadd;
 	pollfd NewPoll;
+	char ip[INET_ADDRSTRLEN];
 	socklen_t len = sizeof(cliadd);
 
-	int incofd = accept(_serSocketFd, (sockaddr *)&(cliadd), &len);
-	if (incofd == -1)
-		{std::cout << "accept() failed" << std::endl; return;}
+	int connecfd = accept(_serSocketFd, (sockaddr *)&(cliadd), &len);
+	if (connecfd == -1)
+	{
+		std::cout << "accept() failed" << std::endl;
+		return;
+	}
+	if (fcntl(connecfd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		std::cout << "fcntl() failed" << std::endl;
+		return;
+	}
 
-	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
-		{std::cout << "fcntl() failed" << std::endl; return;}
-
-	NewPoll.fd = incofd;
+	NewPoll.fd = connecfd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
 
-	cli.SetFd(incofd);
-	cli.SetIPaddr(inet_ntoa((cliadd.sin_addr)));
-	_clients.push_back(cli);
+	inet_ntop(AF_INET, &cliadd.sin_addr, ip, INET_ADDRSTRLEN);
+
+	client.SetIPaddr(ip);
+	client.SetFd(connecfd);
+	_clients.push_back(client);
 	_fds.push_back(NewPoll);
-	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;
+	std::cout << GRE << "Client <" << connecfd << "> Connected" << WHI << std::endl;
 }
 
 void Server::ReceiveNewData(int fd)

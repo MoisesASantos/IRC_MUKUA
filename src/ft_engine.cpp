@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   includes.hpp                                       :+:      :+:    :+:   */
+/*   ft_engine.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/07/22 13:38:24 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 12:45:55 by mosantos         ###   ########.fr       */
+/*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
+/*   Updated: 2026/07/27 12:35:05 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "Headers/header.hpp"
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <poll.h>
-#include <csignal>
-#include <cstring>
-#include <sstream>
+/*for (size_t i = 0; i < _fds.size(); i++)
+{
+    if (!(_fds[i].revents & POLLIN))
+        continue;
 
-#define RED "\e[1;31m"
-#define WHI "\e[0;37m"
-#define GRE "\e[1;32m"
-#define YEL "\e[1;33m"
+    if (_fds[i].fd == _serverSocketFd)
+    {
+        // Nova conexão
+    }
+    else
+    {
+        // Cliente enviou dados
+    }
+}*/
