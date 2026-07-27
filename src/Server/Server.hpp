@@ -22,7 +22,7 @@ class Server
 		int _serSocketFd;
 		static bool _signal;
 		std::string	_password;
-		std::vector<pollfd> _fds;
+		int _epollFd;
 		std::map<int, Client> _clients;
 	
 	public:
@@ -33,9 +33,8 @@ class Server
 	
 		//Getters
 		int GetServerSocketFd() const;
+		int GetEpollFd() const;
 		const std::string& GetPassword() const;
-		size_t GetFdCount() const;
-		pollfd& GetPollFd(size_t index);
 
 		//Setters
 		void	setPassword(std::string pass);

@@ -19,7 +19,7 @@ Server::Server(const Server& other)
 	_port(other._port), 
 	_serSocketFd(other._serSocketFd),
 	_password(other._password),
-	_fds(other._fds),
+	_epollFd(other._epollFd),
 	_clients(other._clients)
 {	
 }
@@ -31,7 +31,7 @@ Server& Server::operator=(const Server& other) {
 		this->_port = other._port;
 		this->_serSocketFd = other._serSocketFd;
 		this->_clients = other._clients;
-		this->_fds = other._fds;
+		this->_epollFd = other._epollFd;
 		this->_password = other._password;
 	}
 	return *this;
@@ -58,6 +58,7 @@ void Server::ServerInit(std::string port)
 	}
 	try
 	{
+		_epollFd = epoll_create1(0);
 		SerSocket();
 	}
 	catch(const std::exception& e)
@@ -72,7 +73,7 @@ void Server::ServerInit(std::string port)
 void Server::SerSocket()
 {
 	sockaddr_in add;
-	pollfd NewPoll;
+	epoll_event event;
 	
 	add.sin_family = AF_INET;
 	add.sin_port = htons(this->_port);
@@ -97,19 +98,18 @@ void Server::SerSocket()
 		throw(std::runtime_error("listen() faild"));
 
 	//we create a poll to monitore the events on file descriptor, in our case, the socket
-	NewPoll.fd = _serSocketFd;
-	NewPoll.events = POLLIN;
-	NewPoll.revents = 0;
-	_fds.push_back(NewPoll);
+	event.events = EPOLLIN;
+	event.data.fd = _serSocketFd;
+	epoll_ctl(_epollFd, EPOLL_CTL_ADD, _serSocketFd, &event);
 }
 
 void Server::AcceptNewClient()
 {
 	Client client;
 	sockaddr_in cliadd;
-	pollfd NewPoll;
 	char ip[INET_ADDRSTRLEN];
 	socklen_t len = sizeof(cliadd);
+	epoll_event event;
 
 	int connecfd = accept(_serSocketFd, (sockaddr *)&(cliadd), &len);
 	if (connecfd == -1)
@@ -123,16 +123,14 @@ void Server::AcceptNewClient()
 		return;
 	}
 
-	NewPoll.fd = connecfd;
-	NewPoll.events = POLLIN;
-	NewPoll.revents = 0;
-
+	event.events = EPOLLIN;
+	event.data.fd = connecfd;
 	inet_ntop(AF_INET, &cliadd.sin_addr, ip, INET_ADDRSTRLEN);
 
 	client.SetIPaddr(ip);
 	client.SetFd(connecfd);
 	_clients[connecfd] = client;
-	_fds.push_back(NewPoll);
+	epoll_ctl(_epollFd, EPOLL_CTL_ADD, connecfd, &event);
 	std::cout << GRE << "Client <" << connecfd << "> Connected" << WHI << std::endl;
 }
 
@@ -169,39 +167,37 @@ bool Server::IsRunning()
 
 void Server::CloseFds()
 {
-    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();++it)
     {
         std::cout << RED << "Client <" << it->first << "> Disconnected" << WHI << std::endl;
         close(it->first);
     }
     _clients.clear();
-    
-	if (_serSocketFd != -1)
+
+    if (_serSocketFd != -1)
     {
         std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
-        close(_serSocketFd);
+		close(_serSocketFd);
         _serSocketFd = -1;
     }
-    _fds.clear();
+    if (_epollFd != -1)
+    {
+        close(_epollFd);
+        _epollFd = -1;
+    }
 }
 
 void Server::ClearClients(int fd)
 {
-    for (size_t i = 0; i < _fds.size(); i++)
-    {
-        if (_fds[i].fd == fd)
-        {
-            _fds.erase(_fds.begin() + i);
-            break;
-        }
-    }
+    if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
+	{
+    	std::cerr << "epoll_ctl DEL failed" << std::endl;
+	}
     close(fd);
-   _clients.erase(fd);
+    _clients.erase(fd);
 }
 
-
 //Getters
-
 int Server::GetServerSocketFd() const
 {
     return _serSocketFd;
@@ -222,14 +218,9 @@ Client* Server::GetClient(int fd)
     return &(it->second);
 }
 
-size_t Server::GetFdCount() const
+int Server::GetEpollFd() const
 {
-    return _fds.size();
-}
-
-pollfd& Server::GetPollFd(size_t index)
-{
-    return _fds[index];
+    return _epollFd;
 }
 
 //Setters
