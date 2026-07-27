@@ -63,7 +63,7 @@ void Server::ServerInit(std::string port)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
-		return ;
+		exit(1);
 	}
 	std::cout << GRE << "Server <" << _serSocketFd << "> Connected" << WHI << std::endl;
 	std::cout << "Waiting to accept a connection...\n";

@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstdlib>
 #include <vector>
 #include <map>
 #include <sys/socket.h>
