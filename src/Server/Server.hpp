@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:11 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:05:10 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 14:41:52 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ class Server
 		//Getters
 		int GetServerSocketFd() const;
 		const std::string& GetPassword() const;
+		size_t GetFdCount() const;
+		pollfd& GetPollFd(size_t index);
 
 		//Setters
 		void	setPassword(std::string pass);

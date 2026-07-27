@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 13:53:15 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 14:52:24 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,32 @@ void    ft_execute_server(Server& server, std::string port)
 {
     Client*     client;
     std::string command;
+    int ret;
 
     server.ServerInit(port);
     while (server.IsRunning())
     {
-        for (size_t i = 0; i < _fds.size(); i++)
+        ret = poll(&server.GetPollFd(0), server.GetFdCount(), 0);
+
+        if (ret <= 0)
+            continue;
+        for (size_t i = 0; i < server.GetFdCount(); i++)
         {
-            if (!(_fds[i].revents & POLLIN))
+            pollfd& pfd = server.GetPollFd(i);
+            
+            if (pfd.revents & POLLIN)
                 continue;
 
-            if (_fds[i].fd == server.GetServerSocketFd())
+            if (pfd.fd == server.GetServerSocketFd())
             {
                 server.AcceptNewClient();
             }
             else
             {
-                client = GetClient(fd);
+                client = server.GetClient(pfd.fd);
                 if (client)
                 {
-                    server.ReceiveNewData(client);
+                    server.ReceiveNewData(*(client));
                     if (client->HasCompleteMessage())
                     {
                         command = client->ExtractMessage();

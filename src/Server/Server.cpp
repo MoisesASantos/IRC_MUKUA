@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:05:49 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/27 14:59:15 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,15 @@ void Server::ServerInit(std::string port)
 		std::cout << "You should use a valid port" << std::endl;
 		return ;
 	}
-	SerSocket();
+	try
+	{
+		SerSocket();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		return ;
+	}
 	std::cout << GRE << "Server <" << _serSocketFd << "> Connected" << WHI << std::endl;
 	std::cout << "Waiting to accept a connection...\n";
 }
@@ -138,7 +146,7 @@ void Server::ReceiveNewData(Client& client)
 	{
 		std::cout << RED << "Client <" << client.GetFd() << "> Disconnected" << WHI << std::endl;
     	ClearClients(client.GetFd());
-    	close(client.GetFd());
+		return;
 	}
 	
     buff[bytes] = '\0';
@@ -159,34 +167,36 @@ bool Server::IsRunning()
 	return !_signal;
 }
 
-void Server::CloseFds(){
-	
-	for(size_t i = 0; i < _clients.size(); i++) {
-		std::cout << RED << "Client <" << _clients[i].GetFd() << "> Disconnected" << WHI << std::endl;
-		close(_clients[i].GetFd());
-	}
-	if (_serSocketFd != -1) {
-		std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
-		close(_serSocketFd);
-	}
+void Server::CloseFds()
+{
+    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+        std::cout << RED << "Client <" << it->first << "> Disconnected" << WHI << std::endl;
+        close(it->first);
+    }
+    _clients.clear();
+    
+	if (_serSocketFd != -1)
+    {
+        std::cout << RED << "Server <" << _serSocketFd << "> Disconnected" << WHI << std::endl;
+        close(_serSocketFd);
+        _serSocketFd = -1;
+    }
+    _fds.clear();
 }
 
-void Server::ClearClients(int fd) {
-	
-	for(size_t i = 0; i < _fds.size(); i++) {
-		
-		if (_fds[i].fd == fd) {	
-			_fds.erase(_fds.begin() + i); 
-			break;
-		}
-	}
-	for(size_t i = 0; i < _clients.size(); i++) {
-		
-		if (_clients[i].GetFd() == fd) {
-			_clients.erase(fd);
-			break;
-		}
-	}
+void Server::ClearClients(int fd)
+{
+    for (size_t i = 0; i < _fds.size(); i++)
+    {
+        if (_fds[i].fd == fd)
+        {
+            _fds.erase(_fds.begin() + i);
+            break;
+        }
+    }
+    close(fd);
+   _clients.erase(fd);
 }
 
 
@@ -210,6 +220,16 @@ Client* Server::GetClient(int fd)
         return NULL;
 
     return &(it->second);
+}
+
+size_t Server::GetFdCount() const
+{
+    return _fds.size();
+}
+
+pollfd& Server::GetPollFd(size_t index)
+{
+    return _fds[index];
 }
 
 //Setters
