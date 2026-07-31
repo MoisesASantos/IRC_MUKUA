@@ -6,11 +6,32 @@
 /*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 09:24:38 by emjoao            #+#    #+#             */
-/*   Updated: 2026/07/31 11:19:59 by emjoao           ###   ########.fr       */
+/*   Updated: 2026/07/31 11:56:22 by emjoao           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Headers/header.hpp"
+
+void ExtractParams(const std::string& raw, size_t& pos, std::vector<std::string>& params)
+{
+    while (pos < raw.size())
+    {
+        if (raw[pos] == ':')
+        {
+            params.push_back(raw.substr(pos + 1));
+            return;
+        }
+
+        size_t space = raw.find(' ', pos);
+        if (space == std::string::npos)
+        {
+            params.push_back(raw.substr(pos));
+            return;
+        }
+        params.push_back(raw.substr(pos, space - pos));
+        pos = space + 1;
+    }
+}
 
 std::string ExtractPrefix(const std::string& raw, size_t& pos)
 {
