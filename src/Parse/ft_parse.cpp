@@ -6,7 +6,7 @@
 /*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 09:24:38 by emjoao            #+#    #+#             */
-/*   Updated: 2026/07/31 11:56:22 by emjoao           ###   ########.fr       */
+/*   Updated: 2026/07/31 12:30:29 by emjoao           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,14 @@ std::string ExtractCommand(const std::string& raw, size_t& pos)
     return (command);
 }
 
-IRCMessage parseMessage(const std::string& raw){
+IRCMessage parseMessage(const std::string& raw)
+{
     IRCMessage msg;
     size_t pos = 0;
 
-    if(raw[0] == ':')
+    if (raw[0] == ':')
         msg.prefix = ExtractPrefix(raw, pos);
     msg.command = ExtractCommand(raw, pos);
+    ExtractParams(raw, pos, msg.params);
     return (msg);
 }
