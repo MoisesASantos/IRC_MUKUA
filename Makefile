@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+         #
+#    By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/09 11:55:31 by mosantos          #+#    #+#              #
-#    Updated: 2026/07/27 15:14:32 by mosantos         ###   ########.fr        #
+#    Updated: 2026/07/31 09:57:30 by emjoao           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ NAME = ircserv
 SRCS = $(SRC_DIR)/Client/Client.cpp \
 	   $(SRC_DIR)/Server/Server.cpp \
 	   $(SRC_DIR)/ft_engine.cpp \
-	   $(SRC_DIR)/main.cpp
+	   $(SRC_DIR)/main.cpp\
+	   $(SRC_DIR)/Parse/ft_parse.cpp
 
 HEADERS = $(SRC_DIR)/Headers/header.hpp \
 		  $(SRC_DIR)/Headers/includes.hpp \

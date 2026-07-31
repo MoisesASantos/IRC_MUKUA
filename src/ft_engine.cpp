@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_engine.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
+/*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 15:08:44 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/31 09:57:43 by emjoao           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void ft_execute_server(Server& server, std::string port)
                 while (client->HasCompleteMessage())
                 {
                     command = client->ExtractMessage();
+                    IRCMessage msg = parseMessage(command);
                 }
             }
         }
