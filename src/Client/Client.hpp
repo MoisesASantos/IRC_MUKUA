@@ -23,6 +23,7 @@ private:
 	std::string _hostname;
 	std::string _recvBuffer;
 	std::string	_ipAddr;
+	std::string _realname;
 	bool        _authenticated;
 	bool        _registered;
 
@@ -39,6 +40,7 @@ public:
 	const std::string&		GetUsername() const;
 	const std::string&		GetIPaddr() const;
 	const std::string& 		GetBuffer() const; 
+	const std::string&		GetRealname() const;
 	bool					IsAuth() const;
 	bool					IsRegister() const;
 
@@ -48,6 +50,7 @@ public:
 	void	SetNickname(const std::string& nickname);
 	void	SetHostname(const std::string& hostname);
 	void	SetUsername(const std::string& username);
+	void	SetRealname(const std::string& realname);
 	void	SetAuth(bool value);
 	void	SetRegister(bool value);
 
@@ -55,5 +58,6 @@ public:
 	void	ClearBuffer();
 	void AppendBuffer(const std::string& data);
 	bool HasCompleteMessage() const;
+	void SendReply(const std::string& message);
 	std::string ExtractMessage();
 };

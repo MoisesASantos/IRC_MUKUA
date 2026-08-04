@@ -227,3 +227,23 @@ int Server::GetEpollFd() const
 void	Server::setPassword(std::string pass) {
 	this->_password = pass;
 }
+
+std::map<int, Client>& Server::GetClientsMap()
+{
+    return _clients;
+}
+
+Channel* Server::GetChannel(const std::string& name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(name);
+    if (it == _channels.end())
+        return NULL;
+    return &(it->second);
+}
+
+Channel* Server::CreateChannel(const std::string& name)
+{
+    _channels[name] = Channel(name);
+    return &_channels[name];
+}
+

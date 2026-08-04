@@ -6,7 +6,7 @@
 /*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/31 09:57:43 by emjoao           ###   ########.fr       */
+/*   Updated: 2026/07/31 12:39:41 by emjoao           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void ft_execute_server(Server& server, std::string port)
                 {
                     command = client->ExtractMessage();
                     IRCMessage msg = parseMessage(command);
+                    dispatch(server, *client, msg);
                 }
             }
         }

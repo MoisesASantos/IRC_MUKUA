@@ -14,6 +14,7 @@
 
 #include "../Headers/includes.hpp"
 #include "../Client/Client.hpp"
+#include "../Channel/Channel.hpp"
 
 class Server
 {
@@ -24,6 +25,7 @@ class Server
 		std::string	_password;
 		int _epollFd;
 		std::map<int, Client> _clients;
+		std::map<std::string, Channel> _channels;
 	
 	public:
 		Server();
@@ -53,4 +55,7 @@ class Server
 		void CloseFds();
 		void ClearClients(int fd);
 		Client* GetClient(int fd);
+		std::map<int, Client>& GetClientsMap();
+		Channel* GetChannel(const std::string& name);
+		Channel* CreateChannel(const std::string& name);
 };

@@ -20,7 +20,9 @@ SRCS = $(SRC_DIR)/Client/Client.cpp \
 	   $(SRC_DIR)/Server/Server.cpp \
 	   $(SRC_DIR)/ft_engine.cpp \
 	   $(SRC_DIR)/main.cpp\
-	   $(SRC_DIR)/Parse/ft_parse.cpp
+	   $(SRC_DIR)/Parse/ft_parse.cpp \
+	   $(SRC_DIR)/Parse/ft_handle.cpp \
+	   $(SRC_DIR)/Channel/Channel.cpp
 
 HEADERS = $(SRC_DIR)/Headers/header.hpp \
 		  $(SRC_DIR)/Headers/includes.hpp \
