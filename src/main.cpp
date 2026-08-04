@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
+/*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 15:45:52 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 14:09:49 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/07/31 11:56:22 by emjoao           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,7 @@ int main(int argc, char **argv)
     }
     server.setPassword(argv[2]);
     ft_execute_server(server, argv[1]);
+
+    
 	return 0;
 }

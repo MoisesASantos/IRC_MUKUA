@@ -14,6 +14,7 @@
 
 #include "../Headers/includes.hpp"
 #include "../Client/Client.hpp"
+#include "../Channel/Channel.hpp"
 
 class Server
 {
@@ -22,8 +23,9 @@ class Server
 		int _serSocketFd;
 		static bool _signal;
 		std::string	_password;
-		std::vector<pollfd> _fds;
+		int _epollFd;
 		std::map<int, Client> _clients;
+		std::map<std::string, Channel> _channels;
 	
 	public:
 		Server();
@@ -33,9 +35,8 @@ class Server
 	
 		//Getters
 		int GetServerSocketFd() const;
+		int GetEpollFd() const;
 		const std::string& GetPassword() const;
-		size_t GetFdCount() const;
-		pollfd& GetPollFd(size_t index);
 
 		//Setters
 		void	setPassword(std::string pass);
@@ -54,4 +55,7 @@ class Server
 		void CloseFds();
 		void ClearClients(int fd);
 		Client* GetClient(int fd);
+		std::map<int, Client>& GetClientsMap();
+		Channel* GetChannel(const std::string& name);
+		Channel* CreateChannel(const std::string& name);
 };

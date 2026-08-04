@@ -21,6 +21,7 @@ Client::Client(const Client& other)
       _hostname(other._hostname),
       _recvBuffer(other._recvBuffer),
       _ipAddr(other._ipAddr),
+	  _realname(other._realname),
       _authenticated(other._authenticated),
       _registered(other._registered)
 {
@@ -34,6 +35,7 @@ Client& Client::operator=(const Client& other) {
 		this->_nickname			=	other._nickname;
     	this->_username			=	other._username;
     	this->_hostname			=	other._hostname;
+		this->_realname			=	other._realname;
 		this->_recvBuffer		=	other._recvBuffer;
 		this->_ipAddr 			=	other._ipAddr;
     	this->_authenticated	= 	other._authenticated;
@@ -59,6 +61,10 @@ const std::string&	Client::GetNickname() const {
 
 const std::string&	Client::GetHostname() const {
 	return (this->_hostname);
+}
+
+const std::string&	Client::GetRealname() const {
+	return (this->_realname);
 }
 
 const std::string&	Client::GetUsername() const {
@@ -88,6 +94,10 @@ void	Client::SetIPaddr(const std::string& ipaddr) {
 
 void	Client::SetNickname(const std::string& nickname) {
 	this->_nickname = nickname;
+}
+
+void	Client::SetRealname(const std::string& realname) {
+	this->_realname = realname;
 }
 
 void	Client::SetHostname(const std::string& hostname) {
@@ -130,4 +140,9 @@ std::string Client::ExtractMessage()
 
 void Client::ClearBuffer() {
 	_recvBuffer.clear();
+}
+
+void Client::SendReply(const std::string& message) {
+	std::string reply = message + "\r\n";
+	send(_fd, reply.c_str(), reply.length(), 0);
 }

@@ -14,18 +14,20 @@
 
 #include <iostream>
 #include <string>
+#include <cstdlib>
 #include <vector>
 #include <map>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <poll.h>
 #include <csignal>
 #include <cstring>
 #include <sstream>
+#include <cerrno>
 
 #define RED "\e[1;31m"
 #define WHI "\e[0;37m"
