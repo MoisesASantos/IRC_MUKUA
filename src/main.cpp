@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: emjoao <emjoao@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 15:45:52 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/31 11:56:22 by emjoao           ###   ########.fr       */
+/*   Updated: 2026/08/04 14:35:19 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,3 +34,13 @@ int main(int argc, char **argv)
     
 	return 0;
 }
+
+
+/*
+Falta impmentar os seguintes comandos
+
+KICK
+INVITE
+TOPIC
+MODE
+*/
