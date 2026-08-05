@@ -247,3 +247,9 @@ Channel* Server::CreateChannel(const std::string& name)
     return &_channels[name];
 }
 
+std::map<std::string, Channel>& Server::GetChannelsMap()
+{
+    return _channels;
+}
+
+
