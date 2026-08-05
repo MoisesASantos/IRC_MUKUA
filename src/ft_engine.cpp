@@ -53,7 +53,7 @@ void ft_execute_server(Server& server, std::string port)
                 if (!client)
                     continue;
                 server.ReceiveNewData(*client);
-                while (client->HasCompleteMessage())
+                if (client->HasCompleteMessage())
                 {
                     command = client->ExtractMessage();
                 }
