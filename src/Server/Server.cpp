@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <stdexcept>
 
 Server::Server() : _serSocketFd(-1) {}
 	
@@ -48,13 +49,11 @@ void Server::ServerInit(std::string port)
 	if (ss >> Port) {
 		this->_port = Port;
 	} else {
-		std::cout << "You should use a valid port" << std::endl;
-		return ;
+		throw(std::runtime_error("You should use a valid port"));
 	}
-	if (!(_port > 0 && _port <= 65535))
+	if (!(_port > 0 && _port <= 65535) || port.find_first_not_of("1234567890") != std::string::npos)
 	{
-		std::cout << "You should use a valid port" << std::endl;
-		return ;
+		throw(std::runtime_error("You should use a valid port"));
 	}
 	try
 	{
