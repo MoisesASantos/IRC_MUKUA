@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerHandler.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgaspar <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 15:18:24 by sgaspar           #+#    #+#             */
-/*   Updated: 2026/08/06 15:18:24 by sgaspar          ###   ########.fr       */
+/*   Updated: 2026/08/06 19:06:36 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,33 +65,53 @@ void ServerHandler::processCommand(Client* client, const std::string& msg) {
     else if (cmd == "INVITE") cmdInvite(client, args);
     else if (cmd == "TOPIC") cmdTopic(client, args);
     else if (cmd == "MODE") cmdMode(client, args);
-    else if (cmd == "PING") client->sendData("PONG :" + (args.size() > 1 ? args[1] : ""));
+    else if (cmd == "PING")
+    {
+        std::string token;
+    
+        if (args.size() > 1)
+            token = args[1];
+    
+        client->sendData(":ircserv PONG :" + token);
+    }
 }
 
 void	ServerHandler::cmdPass(Client* client, const std::vector<std::string>& args) {
     if (args.size() < 2) { client->sendData("461 PASS :Not enough parameters"); return; }
-    if (args[1] == server->GetPassword()) client->SetAuth(true);
+    if (args[1] == server->GetPassword()) client->SetAuth(true); 
+    else client->sendData(":ircserv 464 * :Password incorrect");
+}
+
+void tryRegister(Client* client)
+{
+    if (client->IsAuth() &&
+        !client->GetNickname().empty() &&
+        !client->GetUsername().empty() &&
+        !client->IsRegister())
+    {
+        client->SetRegister(true);
+
+        client->sendData(
+            ":ircserv 001 " +
+            client->GetNickname() +
+            " :Welcome to the Internet Relay Network"
+        );
+    }
 }
 
 void	ServerHandler::cmdNick(Client* client, const std::vector<std::string>& args) {
     if (!client->IsAuth()) return;
-    if (args.size() < 2) { client->sendData("431 :No nickname given"); return; }
-    if (server->GetClientByNick(args[1])) { client->sendData("433 " + args[1] + " :Nickname is already in use"); return; }
+    if (args.size() < 2) { client->sendData(":ircserv 431 :No nickname given"); return; }
+    if (server->GetClientByNick(args[1])) { client->sendData(":ircserv 433 * " + args[1] + " :Nickname is already in use"); return; }
     client->SetNickname(args[1]);
-    if (!client->GetUsername().empty() && !client->IsRegister()) {
-        client->SetRegister(true);
-        client->sendData("001 " + client->GetNickname() + " :Welcome to ft_irc");
-    }
+    tryRegister(client);
 }
 
 void	ServerHandler::cmdUser(Client* client, const std::vector<std::string>& args) {
     if (!client->IsAuth()) return;
-    if (args.size() < 5) { client->sendData("461 USER :Not enough parameters"); return; }
+    if (args.size() < 5) { client->sendData(":ircserv 461 USER :Not enough parameters"); return; }
     client->SetUsername(args[1]);
-    if (!client->GetNickname().empty() && !client->IsRegister()) {
-        client->SetRegister(true);
-        client->sendData("001 " + client->GetNickname() + " :Welcome to ft_irc");
-    }
+    tryRegister(client);
 }
 
 void	ServerHandler::cmdJoin(Client* client, const std::vector<std::string>& args) {
@@ -101,32 +121,29 @@ void	ServerHandler::cmdJoin(Client* client, const std::vector<std::string>& args
 		Channel novo = Channel(name);
 		novo.addOperator(client);
 		channels->insert(std::make_pair(name, novo));
-        // (*channels)[name].addOperator(client);
-
 	}
 	Channel* ch = server->GetChannel(name);
     if (ch->isInviteOnly() && !ch->isInvited(client)) {
-        client->sendData("473 " + name + " :Cannot join channel (+i)");
+        client->sendData(":ircserv 473 " + client->GetNickname() + " " + name + " :Cannot join channel (+i)");
         return;
     }
     if (!ch->getPassword().empty() && (args.size() < 3 || args[2] != ch->getPassword())) {
-        client->sendData("475 " + name + " :Cannot join channel (+k)");
+        client->sendData(":ircserv 475 " + client->GetNickname() + " " + name + " :Cannot join channel (+k)");
         return;
     }
     if (ch->getUserLimit() > 0 && ch->getMemberCount() >= ch->getUserLimit()) {
-        client->sendData("471 " + name + " :Cannot join channel (+l)");
+        client->sendData(":ircserv 471 " + client->GetNickname() + " " + name + " :Cannot join channel (+l)");
         return;
     }
     ch->addMember(client);
-    std::string joinMsg = ":" + client->GetNickname() + " JOIN " + name;
+    std::string joinMsg = ":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost JOIN " + name;
     ch->broadcast(joinMsg);
-    // client->sendData(joinMsg);
 }
 
 void ServerHandler::cmdPrivmsg(Client* client, const std::vector<std::string>& args) {
     if (args.size() < 3) return;
     std::string target = args[1];
-    std::string msg = ":" + client->GetNickname() + " PRIVMSG " + target + " :"+ args[2];
+    std::string msg = ":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost PRIVMSG " + target + " :" + args[2];
 
     if (target[0] == '#') {
         if (channels->find(target) != channels->end() && (*channels)[target].hasMember(client))
@@ -134,7 +151,7 @@ void ServerHandler::cmdPrivmsg(Client* client, const std::vector<std::string>& a
     } else {
         Client* dest = server->GetClientByNick(target);
         if (dest) dest->sendData(msg);
-        else client->sendData("401 " + target + " :No such nick/channel");
+        else client->sendData(":ircserv 401 " + client->GetNickname() + " " + target + " :No such nick/channel");
     }
 }
 
@@ -144,13 +161,12 @@ void ServerHandler::cmdKick(Client* client, const std::vector<std::string>& args
     std::string targetNick = args[2];
     if (channels->find(chName) == channels->end()) return;
     Channel* ch = &(*channels)[chName];
-    if (!ch->isOperator(client)) { client->sendData("482 :You're not channel operator"); return; }
+    if (!ch->isOperator(client)) { client->sendData(":ircserv 482 "+client->GetNickname()+" #"+chName+" :You're not channel operator"); return; }
     
     Client* dest = server->GetClientByNick(targetNick);
     if (dest && ch->hasMember(dest)) {
-        std::string kickMsg = ":" + client->GetNickname() + "!"+client->GetNickname()+"@"+client->GetHostname()+ " KICK " + chName + " " + targetNick + " :" + (args.size() > 3 ? args[3] : "Kicked");
+        std::string kickMsg = ":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost KICK #" + chName + " " + targetNick + " :" + (args.size() > 3 ? args[3] : "Kicked");
         ch->broadcast(kickMsg);
-        // dest->sendData(kickMsg);
         ch->removeMember(dest);
     }
 }
@@ -161,11 +177,11 @@ void ServerHandler::cmdInvite(Client* client, const std::vector<std::string>& ar
     std::string chName = args[2];
     if (channels->find(chName) == channels->end()) return;
     Channel* ch = &(*channels)[chName];
-    if (!ch->isOperator(client)) { client->sendData("482 :You're not channel operator"); return; }
+    if (!ch->isOperator(client)) { client->sendData(":ircserv 482 "+client->GetNickname()+" #"+chName+" :You're not channel operator"); return; }
     Client* dest = server->GetClientByNick(targetNick);
     if (dest) {
         ch->invite(dest);
-        dest->sendData(":" + client->GetNickname() + " INVITE " + targetNick + " " + chName);
+        client->sendData(":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost INVITE " + targetNick + " :#" + chName);
     }
 }
 
@@ -176,15 +192,18 @@ void ServerHandler::cmdTopic(Client* client, const std::vector<std::string>& arg
     Channel* ch = &(*channels)[chName];
     
     if (args.size() == 2) {
-        client->sendData("332 " + client->GetNickname() + " " + chName + " :" + ch->getTopic());
+        client->sendData(":ircserv 332 " + client->GetNickname() + " #" + chName + " :" + ch->getTopic());
     } else {
+        if (ch->getTopic().empty()) {
+            client->sendData(":ircserv 331 " + client->GetNickname() + " #" + chName + " :No topic is set");
+            return;
+        }
         if (ch->isTopicRestricted() && !ch->isOperator(client)) {
-            client->sendData("482 :You're not channel operator");
+            client->sendData(":ircserv 482 " + client->GetNickname() + " #" + chName + " :You're not channel operator");
             return;
         }
         ch->setTopic(args[2]);
-        ch->broadcast(":" + client->GetNickname() + " TOPIC " + chName + " :" + args[2]);
-        client->sendData(":" + client->GetNickname() + " TOPIC " + chName + " :" + args[2]);
+        ch->broadcast(":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost TOPIC #" + chName + " :" + args[2]);
     }
 }
 
@@ -194,7 +213,7 @@ void ServerHandler::cmdMode(Client* client, const std::vector<std::string>& args
     std::string mode = args[2];
     if (channels->find(chName) == channels->end()) return;
     Channel* ch = &(*channels)[chName];
-    if (!ch->isOperator(client)) { client->sendData("482 :You're not channel operator"); return; }
+    if (!ch->isOperator(client)) { client->sendData(":ircserv 482 " +client->GetNickname() + " #" +chName + " :You're not channel operator"); return; }
 
     bool add = (mode[0] == '+');
     char m = mode[1];
@@ -210,7 +229,6 @@ void ServerHandler::cmdMode(Client* client, const std::vector<std::string>& args
             else ch->removeOperator(dest);
         }
     }
-    std::string msg = ":" + client->GetNickname() + " MODE " + chName + " " + mode + (args.size() > 3 ? " " + args[3] : "");
+    std::string msg = ":" + client->GetNickname() + "!" + client->GetUsername() + "@localhost MODE #" + chName + " " + mode + (args.size() > 3 ? " " + args[3] : "");
     ch->broadcast(msg);
-    client->sendData(msg);
 }

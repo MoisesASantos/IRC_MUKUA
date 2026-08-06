@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 12:31:22 by mosantos          #+#    #+#             */
-/*   Updated: 2026/07/27 15:08:44 by mosantos         ###   ########.fr       */
+/*   Updated: 2026/08/06 19:05:57 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void ft_execute_server(Server& server, std::string port)
                 if (!client)
                     continue;
                 server.ReceiveNewData(*client);
-                if (client->HasCompleteMessage())
+                while (client->HasCompleteMessage())
                 {
                     command = client->ExtractMessage();
                     handler.processCommand(client, command);

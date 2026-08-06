@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 14:10:20 by mosantos          #+#    #+#             */
-/*   Updated: 2026/08/06 15:18:17 by sgaspar          ###   ########.fr       */
+/*   Updated: 2026/08/06 18:35:33 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ void Server::ReceiveNewData(Client& client)
 	buff[bytes] = '\0';
 	std::cout << YEL << "Client <" << client.GetFd() << "> Data: " << WHI << buff;
 	client.AppendBuffer(std::string(buff, bytes));
+	memset(buff, 0, sizeof(buff));
 }
 
 bool Server::_signal = false;

@@ -6,7 +6,7 @@
 /*   By: mosantos <mosantos@student.42luanda.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/22 15:45:52 by mosantos          #+#    #+#             */
-/*   Updated: 2026/08/06 15:17:32 by sgaspar          ###   ########.fr       */
+/*   Updated: 2026/08/06 19:07:13 by mosantos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,17 @@ int main(int argc, char **argv)
     std::string port = argv[1];
     std::string password = argv[2];
     
-    if (port.size() == 0 || password.size() == 0)
+    if (port.size() == 0 || password.size() == 0 )
     {
         std::cout << "Usage: /ircserv <port> <password>" << std::endl;
         return 1;
     }
+    if (password.find(' ') != std::string::npos)
+    {
+        std::cerr << "Error: password cannot contain spaces\n";
+        return 1;
+    }
     server.setPassword(argv[2]);
-    //server.SignalHandler(0);
     signal(SIGINT, Server::SignalHandler);
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGQUIT, Server::SignalHandler);
