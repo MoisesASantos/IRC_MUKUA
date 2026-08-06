@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Headers/header.hpp"
+#include "./Server/ServerHandler.hpp"
 #include <exception>
 
 
@@ -30,6 +31,8 @@ void ft_execute_server(Server& server, std::string port)
 
     while (server.IsRunning())
     {
+        ServerHandler handler;
+        handler.setServer(&server);
         ready = epoll_wait(server.GetEpollFd(), events, 64, -1);
         if (ready == -1)
         {
@@ -56,6 +59,7 @@ void ft_execute_server(Server& server, std::string port)
                 if (client->HasCompleteMessage())
                 {
                     command = client->ExtractMessage();
+                    handler.processCommand(client, command);
                 }
             }
         }
