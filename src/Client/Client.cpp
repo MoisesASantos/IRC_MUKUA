@@ -134,6 +134,7 @@ void Client::ClearBuffer() {
 
 bool	Client::sendData(std::string msg) {
 	if (msg.empty()) return true;
+	msg += "\r\n";
 	ssize_t sent = send(_fd, msg.c_str(), msg.length(), 0);
 	if (sent <= 0) return false;
 	return true;

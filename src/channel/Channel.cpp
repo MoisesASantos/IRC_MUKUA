@@ -31,6 +31,7 @@ std::string Channel::getTopic() const { return _topic; }
 void Channel::addMember(Client* client) { _members.insert(client); }
 void Channel::removeMember(Client* client) {
 	_members.erase(client);
+	_invited.erase(client);
 	_operators.erase(client);
 }
 bool Channel::hasMember(Client* client) const { return _members.find(client) != _members.end(); }
