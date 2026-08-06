@@ -21,7 +21,8 @@ Server::Server(const Server& other)
 	_serSocketFd(other._serSocketFd),
 	_password(other._password),
 	_epollFd(other._epollFd),
-	_clients(other._clients)
+	_clients(other._clients),
+	_channels(other._channels)
 {	
 }
 
@@ -32,6 +33,7 @@ Server& Server::operator=(const Server& other) {
 		this->_port = other._port;
 		this->_serSocketFd = other._serSocketFd;
 		this->_clients = other._clients;
+		this->_channels = other._channels;
 		this->_epollFd = other._epollFd;
 		this->_password = other._password;
 	}
@@ -146,9 +148,9 @@ void Server::ReceiveNewData(Client& client)
 		return;
 	}
 	
-    buff[bytes] = '\0';
+	buff[bytes] = '\0';
 	std::cout << YEL << "Client <" << client.GetFd() << "> Data: " << WHI << buff;
-    client.AppendBuffer(std::string(buff, bytes));
+	client.AppendBuffer(std::string(buff, bytes));
 }
 
 bool Server::_signal = false;
@@ -188,12 +190,12 @@ void Server::CloseFds()
 
 void Server::ClearClients(int fd)
 {
-    if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
+	if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, fd, NULL) == -1)
 	{
-    	std::cerr << "epoll_ctl DEL failed" << std::endl;
+		std::cerr << "epoll_ctl DEL failed" << std::endl;
 	}
-    close(fd);
-    _clients.erase(fd);
+	close(fd);
+	_clients.erase(fd);
 }
 
 //Getters
@@ -216,6 +218,24 @@ Client* Server::GetClient(int fd)
 
     return &(it->second);
 }
+
+Client* Server::GetClientByNick(std::string nick) {
+    for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();++it)
+    {
+	if (it->second.GetNickname() == nick)
+			return &(it->second);
+    }
+    return NULL;
+}
+Channel* Server::GetChannel(std::string ch){
+    std::map<std::string, Channel>::iterator it = _channels.find(ch);
+
+    if (it == _channels.end())
+        return NULL;
+    return &(it->second);
+}
+
+std::map<std::string, Channel>* Server::GetAllChannel() { return &_channels; }
 
 int Server::GetEpollFd() const
 {

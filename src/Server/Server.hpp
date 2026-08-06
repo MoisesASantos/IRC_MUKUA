@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../Headers/includes.hpp"
 #include "../Client/Client.hpp"
+#include "../channel/Channel.hpp"
 
 class Server
 {
@@ -24,6 +24,7 @@ class Server
 		std::string	_password;
 		int _epollFd;
 		std::map<int, Client> _clients;
+		std::map<std::string, Channel> _channels;
 	
 	public:
 		Server();
@@ -53,4 +54,7 @@ class Server
 		void CloseFds();
 		void ClearClients(int fd);
 		Client* GetClient(int fd);
+		Client* GetClientByNick(std::string nick);
+		Channel* GetChannel(std::string ch);
+		std::map<std::string, Channel>* GetAllChannel();
 };
