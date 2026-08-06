@@ -29,6 +29,10 @@ int main(int argc, char **argv)
         return 1;
     }
     server.setPassword(argv[2]);
+    //server.SignalHandler(0);
+    signal(SIGINT, Server::SignalHandler);
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGQUIT, Server::SignalHandler);
     ft_execute_server(server, argv[1]);
 	return 0;
 }
