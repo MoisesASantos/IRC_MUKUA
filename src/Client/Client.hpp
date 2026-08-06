@@ -56,4 +56,5 @@ public:
 	void AppendBuffer(const std::string& data);
 	bool HasCompleteMessage() const;
 	std::string ExtractMessage();
+	bool	sendData(std::string msg);
 };
