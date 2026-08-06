@@ -23,6 +23,10 @@ SRCS = $(SRC_DIR)/Client/Client.cpp \
 	   $(SRC_DIR)/ft_engine.cpp \
 	   $(SRC_DIR)/main.cpp
 
+BONUS_NAME = ircbot
+BONUS_SRCS = $(SRC_DIR)/Bot/Bot.cpp \
+		   $(SRC_DIR)/main_bonus.cpp
+
 HEADERS = $(SRC_DIR)/Headers/header.hpp \
 		  $(SRC_DIR)/Headers/includes.hpp \
 		  $(SRC_DIR)/Client/Client.hpp \
@@ -31,20 +35,28 @@ HEADERS = $(SRC_DIR)/Headers/header.hpp \
 		  $(SRC_DIR)/channel/Channel.hpp
 		  
 OBJS = $(SRCS:.cpp=.o)
+BONUS_OBJS = $(BONUS_SRCS:.cpp=.o)
 
 all: $(NAME)
+
+bonus: $(BONUS_NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
+$(BONUS_NAME): $(BONUS_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(BONUS_NAME) $(BONUS_OBJS)
+
 $(OBJS): $(HEADERS)
 
+$(BONUS_OBJS): $(HEADERS) $(SRC_DIR)/Bot/Bot.hpp
+
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(BONUS_OBJS) $(BONUS_NAME)
 
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re
