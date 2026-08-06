@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "Headers/header.hpp"
+#include "./Server/ServerHandler.hpp"
+#include <exception>
 
 
 void ft_execute_server(Server& server, std::string port)
@@ -20,10 +22,17 @@ void ft_execute_server(Server& server, std::string port)
     epoll_event events[64];
     int ready;
 
-    server.ServerInit(port);
+    try {
+        server.ServerInit(port);
+    } catch (const std::exception& err){
+        std::cout << "Erro :" << err.what() << std::endl;
+        return ;
+    }
 
     while (server.IsRunning())
     {
+        ServerHandler handler;
+        handler.setServer(&server);
         ready = epoll_wait(server.GetEpollFd(), events, 64, -1);
         if (ready == -1)
         {
@@ -47,9 +56,10 @@ void ft_execute_server(Server& server, std::string port)
                 if (!client)
                     continue;
                 server.ReceiveNewData(*client);
-                while (client->HasCompleteMessage())
+                if (client->HasCompleteMessage())
                 {
                     command = client->ExtractMessage();
+                    handler.processCommand(client, command);
                 }
             }
         }
