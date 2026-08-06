@@ -18,13 +18,17 @@ SRC_DIR = src
 NAME = ircserv
 SRCS = $(SRC_DIR)/Client/Client.cpp \
 	   $(SRC_DIR)/Server/Server.cpp \
+	   $(SRC_DIR)/Server/ServerHandler.cpp \
+	   $(SRC_DIR)/channel/Channel.cpp \
 	   $(SRC_DIR)/ft_engine.cpp \
 	   $(SRC_DIR)/main.cpp
 
 HEADERS = $(SRC_DIR)/Headers/header.hpp \
 		  $(SRC_DIR)/Headers/includes.hpp \
 		  $(SRC_DIR)/Client/Client.hpp \
-		  $(SRC_DIR)/Server/Server.hpp
+		  $(SRC_DIR)/Server/Server.hpp \
+		  $(SRC_DIR)/Server/ServerHandler.hpp \
+		  $(SRC_DIR)/channel/Channel.hpp
 		  
 OBJS = $(SRCS:.cpp=.o)
 
