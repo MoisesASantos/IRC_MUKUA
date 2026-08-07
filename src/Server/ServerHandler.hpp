@@ -6,7 +6,7 @@
 /*   By: sgaspar <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 15:18:08 by sgaspar           #+#    #+#             */
-/*   Updated: 2026/08/07 18:29:21 by sgaspar          ###   ########.fr       */
+/*   Updated: 2026/08/07 19:04:03 by sgaspar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 #include <string>
 #include <vector>
-#include <iomanip>
 #include "../Client/Client.hpp"
 #include "./Server.hpp"
 
@@ -68,7 +67,8 @@ class	ServerHandler {
 	private:
 	Server	*server;
 	std::map<std::string, Channel> *channels;
-	void sendReply(Client* client, NumericReplies code, const std::string& arg1, const std::string& arg2);
+	void tryRegister(Client* client);
+	void sendReply(Client* client, NumericReplies code, const std::string& arg1 = "", const std::string& arg2 = "");
 
 
 	public:
