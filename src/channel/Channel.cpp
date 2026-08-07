@@ -59,3 +59,18 @@ void Channel::broadcast(const std::string& msg, Client* exclude) {
 			(*it)->sendData(msg);
 	}
 }
+
+std::string    Channel::getNamesList() {
+	std::string lista = "";
+
+	for (std::set<Client*>::iterator it = _members.begin(); it != _members.end(); ++it) {
+		// Se a lista já tem alguém, adiciona um espaço ANTES do próximo nome
+		if (!lista.empty()) 
+			lista += " ";
+		// Adiciona o @ se for operador, ou apenas o nick
+		if (_operators.find(*it) != _operators.end()) 
+			lista += "@" + (*it)->GetNickname();
+		else lista += (*it)->GetNickname();
+	}
+	return lista;
+}
