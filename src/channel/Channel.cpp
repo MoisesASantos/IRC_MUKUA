@@ -56,6 +56,6 @@ size_t Channel::getMemberCount() const { return _members.size(); }
 void Channel::broadcast(const std::string& msg, Client* exclude) {
 	for (std::set<Client*>::iterator it = _members.begin(); it != _members.end(); ++it) {
 		if (*it != exclude)
-			(*it)->sendData(msg + "\r\n");
+			(*it)->sendData(msg);
 	}
 }
