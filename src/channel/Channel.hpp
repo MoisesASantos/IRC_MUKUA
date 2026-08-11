@@ -60,6 +60,7 @@ public:
 	void setUserLimit(size_t limit);
 	size_t getUserLimit() const;
 	size_t getMemberCount() const;
+	std::string getNamesList();
 
 	void broadcast(const std::string& msg, Client* exclude = NULL);
 };
