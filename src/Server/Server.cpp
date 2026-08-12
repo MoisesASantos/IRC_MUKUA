@@ -121,6 +121,7 @@ void Server::AcceptNewClient()
 	if (fcntl(connecfd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "fcntl() failed" << std::endl;
+		close(connecfd);
 		return;
 	}
 

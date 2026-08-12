@@ -29,10 +29,10 @@ void ft_execute_server(Server& server, std::string port)
         return ;
     }
 
+    ServerHandler handler;
+    handler.setServer(&server);
     while (server.IsRunning())
     {
-        ServerHandler handler;
-        handler.setServer(&server);
         ready = epoll_wait(server.GetEpollFd(), events, 64, -1);
         if (ready == -1)
         {
